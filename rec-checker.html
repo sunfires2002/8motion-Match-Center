@@ -1,0 +1,1231 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>REC CHECKER</title>
+  <meta name="description" content="試合中に撮れていない事故を防ぐための撮影チェックアプリ。">
+  <style>
+    :root {
+      --bg: #080b10;
+      --panel: #111821;
+      --panel-2: #17212d;
+      --line: #2b3847;
+      --text: #f4f8fb;
+      --muted: #a8b5c3;
+      --success: #16c784;
+      --success-2: #35e2a0;
+      --accent: #4aa3ff;
+      --accent-2: #7cc4ff;
+      --amber: #ffbd3d;
+      --danger: #ff5959;
+      --blue: #4aa3ff;
+      --shadow: 0 22px 70px rgba(0, 0, 0, .36);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        linear-gradient(120deg, rgba(74, 163, 255, .18), transparent 34rem),
+        linear-gradient(180deg, #080b10 0%, #0d141c 54%, #080b10 100%);
+      color: var(--text);
+      font-family: Inter, "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+      letter-spacing: 0;
+    }
+
+    button, input, textarea, select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .wrap {
+      width: min(1160px, calc(100% - 28px));
+      margin: 0 auto;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(8, 11, 16, .88);
+      border-bottom: 1px solid rgba(255, 255, 255, .08);
+      backdrop-filter: blur(14px);
+    }
+
+    .nav {
+      min-height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      min-width: 0;
+    }
+
+    .app-mark {
+      width: 46px;
+      height: 46px;
+      border: 1px solid rgba(124, 196, 255, .5);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(74, 163, 255, .28), rgba(22, 199, 132, .2)),
+        rgba(255, 255, 255, .05);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-weight: 1000;
+      font-size: .95rem;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .07);
+      flex: 0 0 auto;
+    }
+
+    .brand-text {
+      display: grid;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .brand-text strong {
+      font-size: clamp(1.2rem, 4vw, 1.85rem);
+      line-height: .95;
+      text-transform: uppercase;
+      font-weight: 1000;
+      color: #fff;
+      text-shadow: 0 4px 0 rgba(0, 0, 0, .28);
+    }
+
+    .brand-text span {
+      color: var(--accent-2);
+      font-size: .72rem;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .icon-btn, .btn, .chip-btn {
+      min-height: 42px;
+      border: 1px solid rgba(255, 255, 255, .13);
+      border-radius: 7px;
+      color: #fff;
+      background: rgba(255, 255, 255, .08);
+      font-weight: 1000;
+    }
+
+    .icon-btn {
+      width: 44px;
+      display: grid;
+      place-items: center;
+      padding: 0;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 14px;
+    }
+
+    .btn.primary {
+      background: var(--accent);
+      border-color: var(--accent-2);
+      color: #03101d;
+    }
+
+    .btn.danger {
+      background: rgba(255, 89, 89, .15);
+      border-color: rgba(255, 89, 89, .5);
+      color: #ffdede;
+    }
+
+    .chip-btn {
+      min-height: 36px;
+      padding: 8px 10px;
+      font-size: .82rem;
+    }
+
+    .hero {
+      padding: 22px 0 14px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 330px;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .hero-main, .panel {
+      border: 1px solid rgba(255, 255, 255, .09);
+      background: linear-gradient(145deg, rgba(17, 24, 33, .95), rgba(8, 11, 16, .98));
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero-main {
+      min-height: 250px;
+      padding: clamp(18px, 3.4vw, 34px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-main::after {
+      content: "REC";
+      position: absolute;
+      right: clamp(12px, 3vw, 32px);
+      bottom: clamp(10px, 3vw, 26px);
+      color: rgba(124, 196, 255, .13);
+      font-size: clamp(4rem, 15vw, 9rem);
+      font-weight: 1000;
+      line-height: .75;
+      pointer-events: none;
+    }
+
+    .label {
+      margin: 0 0 10px;
+      color: var(--accent-2);
+      font-size: .75rem;
+      font-weight: 1000;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3, p {
+      margin-top: 0;
+    }
+
+    h1 {
+      max-width: 720px;
+      margin: 0 0 16px;
+      color: #fff;
+      font-size: clamp(2.3rem, 7vw, 5.15rem);
+      line-height: .87;
+      text-transform: uppercase;
+      font-weight: 1000;
+      text-shadow:
+        3px 0 0 #000,
+        -3px 0 0 #000,
+        0 3px 0 #000,
+        0 -3px 0 #000,
+        0 8px 0 rgba(74, 163, 255, .42);
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-copy {
+      max-width: 660px;
+      margin-bottom: 20px;
+      color: var(--muted);
+      line-height: 1.75;
+      position: relative;
+      z-index: 1;
+    }
+
+    .match-form {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr .9fr;
+      gap: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .field span {
+      color: var(--muted);
+      font-size: .76rem;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      min-height: 43px;
+      border: 1px solid rgba(255, 255, 255, .12);
+      border-radius: 7px;
+      padding: 10px 11px;
+      color: #fff;
+      background: rgba(0, 0, 0, .28);
+      outline: none;
+    }
+
+    textarea {
+      min-height: 86px;
+      resize: vertical;
+      line-height: 1.55;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: rgba(25, 211, 108, .72);
+      box-shadow: 0 0 0 3px rgba(25, 211, 108, .14);
+    }
+
+    .status-card {
+      padding: 18px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .status-ring {
+      min-height: 150px;
+      border: 1px solid rgba(74, 163, 255, .34);
+      background: rgba(0, 0, 0, .27);
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 18px;
+    }
+
+    .status-ring strong {
+      display: block;
+      color: var(--accent-2);
+      font-size: clamp(2rem, 8vw, 3.6rem);
+      line-height: 1;
+      font-weight: 1000;
+    }
+
+    .status-ring span {
+      color: var(--muted);
+      font-size: .86rem;
+      font-weight: 900;
+    }
+
+    .overall {
+      color: var(--muted);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .section {
+      padding: 14px 0;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: clamp(1.35rem, 4vw, 2.25rem);
+      line-height: 1;
+      text-transform: uppercase;
+      font-weight: 1000;
+      text-shadow: 0 4px 0 rgba(74, 163, 255, .34);
+    }
+
+    .section-head span {
+      color: var(--muted);
+      font-size: .86rem;
+      font-weight: 800;
+      line-height: 1.5;
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 370px;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .panel {
+      padding: 16px;
+    }
+
+    .check-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .check-item {
+      min-height: 64px;
+      display: grid;
+      grid-template-columns: 40px 1fr;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      border: 1px solid rgba(255, 255, 255, .09);
+      border-radius: 7px;
+      background: rgba(255, 255, 255, .045);
+    }
+
+    .check-item input {
+      width: 40px;
+      height: 40px;
+      min-height: 40px;
+      accent-color: var(--success);
+    }
+
+    .check-item strong {
+      display: block;
+      font-size: .96rem;
+      line-height: 1.25;
+    }
+
+    .check-item span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: .78rem;
+      line-height: 1.35;
+    }
+
+    .camera-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .camera-card {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      padding: 12px;
+      border: 1px solid rgba(255, 255, 255, .09);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .045);
+    }
+
+    .camera-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .camera-name {
+      min-width: 0;
+    }
+
+    .camera-name strong {
+      display: block;
+      font-size: 1.08rem;
+    }
+
+    .camera-name span {
+      color: var(--muted);
+      font-size: .8rem;
+      line-height: 1.5;
+    }
+
+    .badge {
+      flex: 0 0 auto;
+      min-height: 30px;
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 6px 9px;
+      font-size: .75rem;
+      font-weight: 1000;
+      color: #061008;
+      background: var(--success-2);
+    }
+
+    .badge.warn {
+      color: #1a1000;
+      background: var(--amber);
+    }
+
+    .badge.danger {
+      color: #fff;
+      background: var(--danger);
+    }
+
+    .camera-actions {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .camera-actions button[data-state="ok"].active {
+      background: rgba(25, 211, 108, .24);
+      border-color: rgba(25, 211, 108, .72);
+      color: #e8fff0;
+    }
+
+    .camera-actions button[data-state="check"].active {
+      background: rgba(255, 189, 61, .22);
+      border-color: rgba(255, 189, 61, .7);
+      color: #fff4dc;
+    }
+
+    .camera-actions button[data-state="stopped"].active {
+      background: rgba(255, 89, 89, .22);
+      border-color: rgba(255, 89, 89, .74);
+      color: #ffe3e3;
+    }
+
+    .timer-panel {
+      display: grid;
+      gap: 14px;
+    }
+
+    .timer-display {
+      min-height: 145px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, .09);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(74, 163, 255, .16), transparent 52%),
+        rgba(0, 0, 0, .26);
+    }
+
+    .timer-display strong {
+      display: block;
+      color: #fff;
+      font-size: clamp(2.4rem, 11vw, 4.5rem);
+      line-height: 1;
+      font-weight: 1000;
+    }
+
+    .timer-display span {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-weight: 900;
+    }
+
+    .timer-controls {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .milestone-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .milestone {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      padding: 9px 10px;
+      border: 1px solid rgba(255, 255, 255, .08);
+      border-radius: 7px;
+      background: rgba(255, 255, 255, .04);
+      color: var(--muted);
+      font-size: .86rem;
+      font-weight: 900;
+    }
+
+    .milestone.done {
+      color: #e7fff0;
+      border-color: rgba(25, 211, 108, .44);
+      background: rgba(25, 211, 108, .12);
+    }
+
+    .log-list {
+      display: grid;
+      gap: 10px;
+      max-height: 320px;
+      overflow: auto;
+      padding-right: 2px;
+    }
+
+    .log-item {
+      border: 1px solid rgba(255, 255, 255, .09);
+      border-radius: 7px;
+      background: rgba(255, 255, 255, .045);
+      padding: 10px;
+    }
+
+    .log-item strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .log-item span {
+      color: var(--muted);
+      font-size: .82rem;
+      line-height: 1.5;
+    }
+
+    .empty {
+      color: var(--muted);
+      line-height: 1.6;
+      padding: 12px;
+      border: 1px dashed rgba(255, 255, 255, .16);
+      border-radius: 7px;
+      margin: 0;
+    }
+
+    .log-form {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .footer-actions {
+      position: sticky;
+      bottom: 0;
+      z-index: 18;
+      padding: 10px 0;
+      background: rgba(8, 11, 16, .88);
+      border-top: 1px solid rgba(255, 255, 255, .08);
+      backdrop-filter: blur(14px);
+    }
+
+    .footer-actions .wrap {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 78px;
+      z-index: 40;
+      width: min(520px, calc(100% - 26px));
+      transform: translateX(-50%) translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+      transition: .22s ease;
+      border: 1px solid rgba(255, 189, 61, .62);
+      background: #211707;
+      color: #fff7e5;
+      border-radius: 8px;
+      padding: 13px 14px;
+      box-shadow: var(--shadow);
+      font-weight: 900;
+      line-height: 1.45;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    @media (max-width: 920px) {
+      .nav {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 11px 0;
+      }
+
+      .nav-actions {
+        width: 100%;
+      }
+
+      .nav-actions .btn {
+        flex: 1;
+      }
+
+      .hero-grid, .dashboard {
+        grid-template-columns: 1fr;
+      }
+
+      .match-form, .check-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .wrap {
+        width: min(100% - 20px, 1160px);
+      }
+
+      .hero {
+        padding-top: 12px;
+      }
+
+      .hero-main, .panel, .status-card {
+        padding: 14px;
+      }
+
+      .section-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .camera-actions, .timer-controls, .form-row, .footer-actions .wrap {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-actions {
+        position: static;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap nav">
+      <div class="brand" aria-label="REC CHECKER">
+        <span class="app-mark" aria-hidden="true">REC</span>
+        <span class="brand-text">
+          <strong>REC CHECKER</strong>
+          <span>撮れてない事故を防ぐ</span>
+        </span>
+      </div>
+      <div class="nav-actions">
+        <button class="btn primary" type="button" id="saveBtn">保存</button>
+        <button class="btn" type="button" id="exportBtn">ログ出力</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div class="hero-main">
+          <p class="label">Match recording guard</p>
+          <h1>REC CHECKER</h1>
+          <p class="hero-copy">試合前の確認と試合中の録画ランプ確認をまとめて、撮影者が専門家でなくても「止まっていた」に早く気づけるためのシンプルな撮影チェックアプリ。</p>
+          <div class="match-form">
+            <label class="field">
+              <span>試合名</span>
+              <input id="matchName" type="text" placeholder="例: Aチーム vs Bチーム">
+            </label>
+            <label class="field">
+              <span>日付</span>
+              <input id="matchDate" type="date">
+            </label>
+            <label class="field">
+              <span>会場</span>
+              <input id="venue" type="text" placeholder="例: 市民体育館">
+            </label>
+          </div>
+        </div>
+
+        <aside class="panel status-card">
+          <p class="label">Ready status</p>
+          <div class="status-ring">
+            <div>
+              <strong id="readyPercent">0%</strong>
+              <span id="readyText">撮影前チェック未完了</span>
+            </div>
+          </div>
+          <p class="overall" id="overallText">チェックリストとカメラ状態を確認してください。</p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap dashboard">
+        <div>
+          <div class="section-head">
+            <h2>Pre Check</h2>
+            <span>試合開始前に押しておく項目</span>
+          </div>
+          <section class="panel">
+            <div class="check-grid" id="checkList"></div>
+          </section>
+
+          <div class="section-head" style="margin-top: 16px;">
+            <h2>Cameras</h2>
+            <span>右・中央・左・360度などの録画状況</span>
+          </div>
+          <section class="panel">
+            <div class="camera-list" id="cameraList"></div>
+            <div class="form-row" style="margin-top: 12px;">
+              <input id="newCameraName" type="text" placeholder="カメラ名を追加">
+              <button class="btn" type="button" id="addCameraBtn">カメラ追加</button>
+            </div>
+          </section>
+        </div>
+
+        <aside class="timer-panel">
+          <section class="panel">
+            <p class="label">Recording timer</p>
+            <div class="timer-display">
+              <div>
+                <strong id="timerText">00:00</strong>
+                <span id="timerSub">タイマー停止中</span>
+              </div>
+            </div>
+            <div class="timer-controls">
+              <button class="btn primary" type="button" id="startTimerBtn">開始</button>
+              <button class="btn" type="button" id="pauseTimerBtn">一時停止</button>
+              <button class="btn danger" type="button" id="resetTimerBtn">リセット</button>
+            </div>
+          </section>
+
+          <section class="panel">
+            <p class="label">Check alerts</p>
+            <div class="milestone-list" id="milestoneList"></div>
+          </section>
+
+          <section class="panel">
+            <p class="label">Trouble log</p>
+            <div class="log-list" id="logList"></div>
+            <div class="log-form">
+              <div class="form-row">
+                <select id="logCamera"></select>
+                <input id="logMinute" type="text" placeholder="例: 前半12分">
+              </div>
+              <textarea id="logMemo" placeholder="例: 中央カメラの録画ランプが消えていた。外部電源を差し直して復旧。"></textarea>
+              <button class="btn" type="button" id="addLogBtn">トラブル記録を追加</button>
+            </div>
+          </section>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <div class="footer-actions">
+    <div class="wrap">
+      <button class="btn" type="button" data-quick="all-ok">全カメラOK</button>
+      <button class="btn" type="button" data-quick="check-now">録画ランプ確認</button>
+      <button class="btn" type="button" data-quick="halftime">ハーフタイム</button>
+      <button class="btn danger" type="button" id="clearBtn">初期化</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const storageKey = "rec_checker_v1";
+
+    const defaultState = {
+      matchName: "",
+      matchDate: new Date().toISOString().slice(0, 10),
+      venue: "",
+      checks: {
+        sd: false,
+        power: false,
+        angle: false,
+        settings: false,
+        storage: false,
+        lamp: false,
+        heat: false,
+        sync: false
+      },
+      cameras: [
+        { id: "right", name: "右カメラ", note: "サイド・右奥", state: "check", updatedAt: "" },
+        { id: "center", name: "中央カメラ", note: "全体固定", state: "check", updatedAt: "" },
+        { id: "left", name: "左カメラ", note: "サイド・左奥", state: "check", updatedAt: "" }
+      ],
+      timer: {
+        elapsed: 0,
+        running: false,
+        startedAt: null
+      },
+      logs: []
+    };
+
+    const checkItems = [
+      ["sd", "SDカード", "空き容量とフォーマットを確認"],
+      ["power", "外部電源", "ケーブル抜けと残量を確認"],
+      ["angle", "カメラ角度", "ゴール・ライン・死角を確認"],
+      ["settings", "録画設定", "4K30など予定設定を確認"],
+      ["storage", "保存時間", "長時間録画できる容量を確認"],
+      ["lamp", "録画ランプ", "実際に点灯しているか確認"],
+      ["heat", "発熱対策", "日差し・ケース・風通しを確認"],
+      ["sync", "開始時刻", "編集用に録画開始時刻を確認"]
+    ];
+
+    const milestones = [
+      { sec: 600, label: "前半10分 録画ランプ確認" },
+      { sec: 1200, label: "前半20分 録画ランプ確認" },
+      { sec: 1500, label: "ハーフタイム 全カメラ確認" },
+      { sec: 2100, label: "後半10分 録画ランプ確認" },
+      { sec: 2700, label: "後半20分 録画ランプ確認" }
+    ];
+
+    let state = loadState();
+    let timerId = null;
+    let lastAlertSec = 0;
+
+    const $ = (id) => document.getElementById(id);
+
+    function loadState() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(storageKey));
+        return saved ? mergeState(saved) : clone(defaultState);
+      } catch (error) {
+        return clone(defaultState);
+      }
+    }
+
+    function mergeState(saved) {
+      return {
+        ...clone(defaultState),
+        ...saved,
+        checks: { ...defaultState.checks, ...(saved.checks || {}) },
+        timer: { ...defaultState.timer, ...(saved.timer || {}) },
+        cameras: Array.isArray(saved.cameras) && saved.cameras.length ? saved.cameras : clone(defaultState.cameras),
+        logs: Array.isArray(saved.logs) ? saved.logs : []
+      };
+    }
+
+    function clone(value) {
+      return JSON.parse(JSON.stringify(value));
+    }
+
+    function saveState(silent = false) {
+      localStorage.setItem(storageKey, JSON.stringify(state));
+      if (!silent) showToast("保存しました。");
+    }
+
+    function formatClock(seconds) {
+      const mins = Math.floor(seconds / 60).toString().padStart(2, "0");
+      const secs = Math.floor(seconds % 60).toString().padStart(2, "0");
+      return `${mins}:${secs}`;
+    }
+
+    function nowLabel() {
+      const date = new Date();
+      return date.toLocaleTimeString("ja-JP", { hour: "2-digit", minute: "2-digit" });
+    }
+
+    function renderAll() {
+      $("matchName").value = state.matchName;
+      $("matchDate").value = state.matchDate;
+      $("venue").value = state.venue;
+      renderChecks();
+      renderCameras();
+      renderTimer();
+      renderMilestones();
+      renderLogs();
+      renderStatus();
+      saveState(true);
+    }
+
+    function renderChecks() {
+      $("checkList").innerHTML = checkItems.map(([id, title, note]) => `
+        <label class="check-item">
+          <input type="checkbox" data-check="${id}" ${state.checks[id] ? "checked" : ""}>
+          <span>
+            <strong>${title}</strong>
+            <span>${note}</span>
+          </span>
+        </label>
+      `).join("");
+    }
+
+    function renderCameras() {
+      const cameraList = $("cameraList");
+      cameraList.innerHTML = state.cameras.map((camera) => {
+        const label = camera.state === "ok" ? "録画OK" : camera.state === "stopped" ? "停止疑い" : "要確認";
+        const badgeClass = camera.state === "ok" ? "" : camera.state === "stopped" ? "danger" : "warn";
+        const updated = camera.updatedAt ? `${camera.updatedAt} 確認` : "未確認";
+        return `
+          <article class="camera-card">
+            <div class="camera-top">
+              <div class="camera-name">
+                <strong>${escapeHtml(camera.name)}</strong>
+                <span>${escapeHtml(camera.note || updated)} / ${updated}</span>
+              </div>
+              <span class="badge ${badgeClass}">${label}</span>
+            </div>
+            <div class="camera-actions">
+              <button class="chip-btn ${camera.state === "ok" ? "active" : ""}" type="button" data-camera="${camera.id}" data-state="ok">OK</button>
+              <button class="chip-btn ${camera.state === "check" ? "active" : ""}" type="button" data-camera="${camera.id}" data-state="check">要確認</button>
+              <button class="chip-btn ${camera.state === "stopped" ? "active" : ""}" type="button" data-camera="${camera.id}" data-state="stopped">停止疑い</button>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      $("logCamera").innerHTML = state.cameras.map((camera) => `<option value="${camera.id}">${escapeHtml(camera.name)}</option>`).join("");
+    }
+
+    function renderTimer() {
+      const elapsed = currentElapsed();
+      $("timerText").textContent = formatClock(elapsed);
+      $("timerSub").textContent = state.timer.running ? "録画確認タイマー作動中" : "タイマー停止中";
+    }
+
+    function renderMilestones() {
+      const elapsed = currentElapsed();
+      $("milestoneList").innerHTML = milestones.map((item) => `
+        <div class="milestone ${elapsed >= item.sec ? "done" : ""}">
+          <span>${item.label}</span>
+          <strong>${formatClock(item.sec)}</strong>
+        </div>
+      `).join("");
+    }
+
+    function renderLogs() {
+      if (!state.logs.length) {
+        $("logList").innerHTML = `<p class="empty">まだトラブル記録はありません。</p>`;
+        return;
+      }
+
+      $("logList").innerHTML = state.logs.map((log) => `
+        <article class="log-item">
+          <strong>${escapeHtml(log.cameraName)} / ${escapeHtml(log.minute || "時刻未入力")}</strong>
+          <span>${escapeHtml(log.memo)}<br>${escapeHtml(log.createdAt)}</span>
+        </article>
+      `).join("");
+    }
+
+    function renderStatus() {
+      const checkedCount = Object.values(state.checks).filter(Boolean).length;
+      const cameraOk = state.cameras.filter((camera) => camera.state === "ok").length;
+      const total = checkItems.length + state.cameras.length;
+      const done = checkedCount + cameraOk;
+      const percent = total ? Math.round((done / total) * 100) : 0;
+      const stopped = state.cameras.filter((camera) => camera.state === "stopped");
+      const needsCheck = state.cameras.filter((camera) => camera.state !== "ok");
+
+      $("readyPercent").textContent = `${percent}%`;
+
+      if (stopped.length) {
+        $("readyText").textContent = "停止疑いあり";
+        $("overallText").textContent = `${stopped.map((camera) => camera.name).join("、")} を確認してください。`;
+        return;
+      }
+
+      if (percent === 100) {
+        $("readyText").textContent = "撮影準備OK";
+        $("overallText").textContent = "全チェック完了。試合中はタイマー通知に合わせて録画ランプを確認してください。";
+        return;
+      }
+
+      $("readyText").textContent = "確認中";
+      $("overallText").textContent = `${checkItems.length - checkedCount}個の事前チェック、${needsCheck.length}台のカメラ確認が残っています。`;
+    }
+
+    function currentElapsed() {
+      if (!state.timer.running || !state.timer.startedAt) return state.timer.elapsed;
+      return state.timer.elapsed + Math.floor((Date.now() - state.timer.startedAt) / 1000);
+    }
+
+    function startTimer() {
+      if (state.timer.running) return;
+      state.timer.running = true;
+      state.timer.startedAt = Date.now();
+      lastAlertSec = currentElapsed();
+      tickTimer();
+      timerId = window.setInterval(tickTimer, 1000);
+      saveState(true);
+      showToast("録画確認タイマーを開始しました。");
+    }
+
+    function pauseTimer() {
+      if (!state.timer.running) return;
+      state.timer.elapsed = currentElapsed();
+      state.timer.running = false;
+      state.timer.startedAt = null;
+      window.clearInterval(timerId);
+      renderAll();
+      showToast("タイマーを一時停止しました。");
+    }
+
+    function resetTimer() {
+      state.timer.elapsed = 0;
+      state.timer.running = false;
+      state.timer.startedAt = null;
+      lastAlertSec = 0;
+      window.clearInterval(timerId);
+      renderAll();
+      showToast("タイマーをリセットしました。");
+    }
+
+    function tickTimer() {
+      const elapsed = currentElapsed();
+      renderTimer();
+      renderMilestones();
+      const target = milestones.find((item) => elapsed >= item.sec && lastAlertSec < item.sec);
+      if (target) {
+        lastAlertSec = target.sec;
+        markCamerasCheck();
+        showToast(`${target.label}：右・中央・左の録画ランプを確認してください。`);
+      }
+      saveState(true);
+    }
+
+    function markCamerasCheck() {
+      state.cameras = state.cameras.map((camera) => ({
+        ...camera,
+        state: camera.state === "stopped" ? "stopped" : "check",
+        updatedAt: nowLabel()
+      }));
+      renderCameras();
+      renderStatus();
+    }
+
+    function setAllCamerasOk() {
+      state.cameras = state.cameras.map((camera) => ({ ...camera, state: "ok", updatedAt: nowLabel() }));
+      renderAll();
+      showToast("全カメラをOKにしました。");
+    }
+
+    function addCamera() {
+      const name = $("newCameraName").value.trim();
+      if (!name) {
+        showToast("追加するカメラ名を入力してください。");
+        return;
+      }
+      state.cameras.push({
+        id: `camera-${Date.now()}`,
+        name,
+        note: "追加カメラ",
+        state: "check",
+        updatedAt: ""
+      });
+      $("newCameraName").value = "";
+      renderAll();
+      showToast(`${name} を追加しました。`);
+    }
+
+    function addLog() {
+      const camera = state.cameras.find((item) => item.id === $("logCamera").value) || state.cameras[0];
+      const memo = $("logMemo").value.trim();
+      if (!memo) {
+        showToast("トラブル内容を入力してください。");
+        return;
+      }
+      state.logs.unshift({
+        id: `log-${Date.now()}`,
+        cameraId: camera.id,
+        cameraName: camera.name,
+        minute: $("logMinute").value.trim(),
+        memo,
+        createdAt: new Date().toLocaleString("ja-JP")
+      });
+      $("logMinute").value = "";
+      $("logMemo").value = "";
+      renderAll();
+      showToast("トラブル記録を追加しました。");
+    }
+
+    function exportLog() {
+      const lines = [
+        "# REC CHECKER LOG",
+        `試合名: ${state.matchName || ""}`,
+        `日付: ${state.matchDate || ""}`,
+        `会場: ${state.venue || ""}`,
+        "",
+        "## 事前チェック",
+        ...checkItems.map(([id, title]) => `- ${state.checks[id] ? "[OK]" : "[ ]"} ${title}`),
+        "",
+        "## カメラ状態",
+        ...state.cameras.map((camera) => `- ${camera.name}: ${camera.state} (${camera.updatedAt || "未確認"})`),
+        "",
+        "## トラブル記録",
+        ...(state.logs.length ? state.logs.map((log) => `- ${log.createdAt} / ${log.cameraName} / ${log.minute || "時刻未入力"} / ${log.memo}`) : ["- なし"])
+      ];
+      const blob = new Blob([lines.join("\n")], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `rec-checker-${state.matchDate || "log"}.txt`;
+      link.click();
+      URL.revokeObjectURL(url);
+      showToast("ログを書き出しました。");
+    }
+
+    function clearAll() {
+      if (!confirm("REC CHECKERの保存データを初期化しますか？")) return;
+      state = clone(defaultState);
+      state.matchDate = new Date().toISOString().slice(0, 10);
+      localStorage.removeItem(storageKey);
+      window.clearInterval(timerId);
+      renderAll();
+      showToast("初期化しました。");
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    let toastId = null;
+    function showToast(message) {
+      const toast = $("toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      window.clearTimeout(toastId);
+      toastId = window.setTimeout(() => toast.classList.remove("show"), 3800);
+    }
+
+    document.addEventListener("change", (event) => {
+      const target = event.target;
+      if (target.matches("[data-check]")) {
+        state.checks[target.dataset.check] = target.checked;
+        renderStatus();
+        saveState(true);
+      }
+    });
+
+    document.addEventListener("click", (event) => {
+      const button = event.target.closest("button");
+      if (!button) return;
+
+      if (button.dataset.camera && button.dataset.state) {
+        const camera = state.cameras.find((item) => item.id === button.dataset.camera);
+        if (camera) {
+          camera.state = button.dataset.state;
+          camera.updatedAt = nowLabel();
+          renderAll();
+        }
+      }
+
+      if (button.dataset.quick === "all-ok") setAllCamerasOk();
+      if (button.dataset.quick === "check-now") {
+        markCamerasCheck();
+        showToast("録画ランプ確認の時間です。各カメラを見てOKを押してください。");
+      }
+      if (button.dataset.quick === "halftime") {
+        pauseTimer();
+        markCamerasCheck();
+        showToast("ハーフタイム確認：電源・発熱・SDカード・録画ランプを見てください。");
+      }
+    });
+
+    ["matchName", "matchDate", "venue"].forEach((id) => {
+      $(id).addEventListener("input", (event) => {
+        state[id] = event.target.value;
+        saveState(true);
+      });
+    });
+
+    $("saveBtn").addEventListener("click", () => saveState(false));
+    $("exportBtn").addEventListener("click", exportLog);
+    $("addCameraBtn").addEventListener("click", addCamera);
+    $("addLogBtn").addEventListener("click", addLog);
+    $("startTimerBtn").addEventListener("click", startTimer);
+    $("pauseTimerBtn").addEventListener("click", pauseTimer);
+    $("resetTimerBtn").addEventListener("click", resetTimer);
+    $("clearBtn").addEventListener("click", clearAll);
+
+    renderAll();
+    if (state.timer.running) {
+      state.timer.elapsed = currentElapsed();
+      state.timer.startedAt = Date.now();
+      timerId = window.setInterval(tickTimer, 1000);
+    }
+  </script>
+</body>
+</html>
