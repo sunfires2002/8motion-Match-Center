@@ -317,7 +317,7 @@
     <div class="wrap">
       <section class="intro">
         <h1>管理画面</h1>
-        <p>入力内容はこのブラウザに自動保存されます。「公開HTMLを書き出す」で生成したindex.htmlをGitHub Pagesに配置してください。</p>
+        <p>入力内容はこのブラウザに自動保存されます。「公開HTMLを書き出す」で生成したindex.htmlをGitHub Pagesに配置してください。同名ファイルがある場合、ブラウザが index (1).html のような名前で保存することがあります。</p>
       </section>
 
       <div class="layout">
@@ -431,6 +431,7 @@
     };
 
     let data = loadData();
+    let lastPreviewHtml = "";
 
     const $ = (selector, root = document) => root.querySelector(selector);
     const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
@@ -615,11 +616,14 @@
     }
 
     function updatePreview() {
-      $("#preview").srcdoc = buildPublicHtml(data);
+      lastPreviewHtml = buildPublicHtml(data);
+      $("#preview").srcdoc = lastPreviewHtml;
     }
 
     function exportHtml() {
-      download("index.html", buildPublicHtml(data), "text/html");
+      updatePreview();
+      download("index.html", lastPreviewHtml, "text/html");
+      setStatus("プレビューと同じHTMLを書き出しました");
     }
 
     function esc(value) {
