@@ -1,0 +1,156 @@
+{
+  "hero": {
+    "copy": "試合結果、最新の試合動画、個人成績、チーム活動をまとめて確認できる8motion公式レコードページ。"
+  },
+  "latest": {
+    "home": "8motion",
+    "away": "バモラ",
+    "homeScore": 12,
+    "awayScore": 0,
+    "meta": "",
+    "videoTitle": "",
+    "videoDescription": "",
+    "thumbnailUrl": "",
+    "firstHalfUrl": "",
+    "secondHalfUrl": "",
+    "pulseUrl": "",
+    "fullUrl": "<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/LvPMKz-r96E?si=l-9g16ge193vlOHB\" title=\"YouTube video player\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe>",
+    "highlightUrl": "#"
+  },
+  "next": {
+    "date": "2026/07.05",
+    "description": "未定",
+    "tagsText": "FUN HYOGO FUTSAL LEAGUE 4B"
+  },
+  "videos": [
+    {
+      "title": "2026-2027 FUN HYOGO LEAGUE 4B Round02 2nd",
+      "detail": "vs まの〜ん",
+      "url": "https://youtu.be/xjIZRNxdfd8?si=MWszr9h1_jLxzWtm",
+      "thumbnailUrl": "https://img.youtube.com/vi/xjIZRNxdfd8/maxresdefault.jpg"
+    },
+    {
+      "title": "2026-2027 FUN HYOGO LEAGUE 4B Round02 1st",
+      "detail": "vs  まの〜ん",
+      "url": "https://youtu.be/eu3ChSESqOY?si=dHE8UG4lTWTpnS_L",
+      "thumbnailUrl": "https://img.youtube.com/vi/eu3ChSESqOY/maxresdefault.jpg"
+    },
+    {
+      "title": "2026-2027 FUN HYOGO LEAGUE 4B Round01 2nd",
+      "detail": "vs KOBE-fire",
+      "url": "https://youtu.be/_YC7QmWIcEs?si=riZ0KO5341m166eD",
+      "thumbnailUrl": "https://img.youtube.com/vi/_YC7QmWIcEs/maxresdefault.jpg"
+    },
+    {
+      "title": "2026-2027 FUN HYOGO LEAGUE 4B Round01 1st",
+      "detail": "vs KOBE-fire",
+      "url": "https://youtu.be/SnHxRVXgGT0?si=eS4RCxUYztDToCEi",
+      "thumbnailUrl": "https://img.youtube.com/vi/SnHxRVXgGT0/maxresdefault.jpg"
+    }
+  ],
+  "standings": [
+    {
+      "rank": 1,
+      "team": "KOBE-fire",
+      "pts": 9
+    },
+    {
+      "rank": 2,
+      "team": "８motion",
+      "pts": 9
+    },
+    {
+      "rank": 2,
+      "team": "FCルーズ",
+      "pts": 3
+    },
+    {
+      "rank": 3,
+      "team": "バモラ",
+      "pts": 3
+    },
+    {
+      "rank": 3,
+      "team": "まの〜ん",
+      "pts": 3
+    },
+    {
+      "rank": 3,
+      "team": "神戸オールロックス",
+      "pts": 3
+    }
+  ],
+  "players": [
+    {
+      "player": "森⑩",
+      "record": "Goals",
+      "total": 7
+    },
+    {
+      "player": "竹内⑰",
+      "record": "Goals",
+      "total": 4
+    },
+    {
+      "player": "藤田⑧",
+      "record": "Goals",
+      "total": 3
+    },
+    {
+      "player": "大平⑥",
+      "record": "Goals",
+      "total": 2
+    },
+    {
+      "player": "栗原⑫",
+      "record": "Goals",
+      "total": 1
+    },
+    {
+      "player": "八木CP⑦",
+      "record": "Goals",
+      "total": 1
+    },
+    {
+      "player": "オウンゴール",
+      "record": "Goals",
+      "total": 1
+    },
+    {
+      "player": "立花⑪",
+      "record": "Goals",
+      "total": 3
+    },
+    {
+      "player": "金子⑯",
+      "record": "Goals",
+      "total": 1
+    },
+    {
+      "player": "八木⑬",
+      "record": "Goals",
+      "total": 2
+    }
+  ],
+  "activity": [
+    {
+      "title": "6月リーグ第3節を更新",
+      "body": "試合結果と最新動画を公開しました。",
+      "imageUrl": "https://img.youtube.com/vi/LvPMKz-r96E/maxresdefault.jpg"
+    },
+    {
+      "title": "6月リーグ第2節を更新",
+      "body": "試合結果と最新動画を公開しました。",
+      "imageUrl": "https://img.youtube.com/vi/eu3ChSESqOY/maxresdefault.jpg"
+    },
+    {
+      "title": "5月リーグ第1節を更新",
+      "body": "試合結果と最新動画を公開しました。",
+      "imageUrl": "https://drive.google.com/file/d/1DNrLULKL83Ht5Tq379_O9NfGam1dNe3X/view?usp=drive_link"
+    },
+    {
+      "title": "７月リーグ第4節を更新",
+      "body": "試合結果を公開しました。"
+    }
+  ]
+}
